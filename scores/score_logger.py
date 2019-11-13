@@ -6,14 +6,15 @@ from collections import deque
 import os
 import csv
 import numpy as np
+from pathlib import Path
 
-SCORES_CSV_PATH = "./scores/scores.csv"
-SCORES_PNG_PATH = "./scores/scores.png"
-SOLVED_CSV_PATH = "./scores/solved.csv"
-SOLVED_PNG_PATH = "./scores/solved.png"
 AVERAGE_SCORE_TO_SOLVE = 195
 CONSECUTIVE_RUNS_TO_SOLVE = 100
 
+SCORES_CSV_PATH = Path("./scores/scores.csv")
+SCORES_PNG_PATH = Path("./scores/scores.png")
+SOLVED_CSV_PATH = Path("./scores/solved.csv")
+SOLVED_PNG_PATH = Path("./scores/solved.png")
 
 class ScoreLogger:
 
@@ -38,10 +39,10 @@ class ScoreLogger:
 						show_legend=True)
 		self.scores.append(score)
 		mean_score = mean(self.scores)
-		print "Scores: (min: " + str(min(self.scores)) + ", avg: " + str(mean_score) + ", max: " + str(max(self.scores)) + ")\n"
 		if mean_score >= AVERAGE_SCORE_TO_SOLVE and len(self.scores) >= CONSECUTIVE_RUNS_TO_SOLVE:
 			solve_score = run-CONSECUTIVE_RUNS_TO_SOLVE
-			print "Solved in " + str(solve_score) + " runs, " + str(run) + " total runs."
+		print("Scores: (min: " + str(min(self.scores)) + ", avg: " + str(mean_score) + ", max: " + str(max(self.scores)) + ")\n")
+			print("Solved in " + str(solve_score) + " runs, " + str(run) + " total runs.")
 			self._save_csv(SOLVED_CSV_PATH, solve_score)
 			self._save_png(input_path=SOLVED_CSV_PATH,
 							output_path=SOLVED_PNG_PATH,
@@ -59,6 +60,7 @@ class ScoreLogger:
 		with open(input_path, "r") as scores:
 			reader = csv.reader(scores)
 			data = list(reader)
+			data = [i for i in data if i] # rebuild without empty values
 			for i in range(0, len(data)):
 				x.append(int(i))
 				y.append(int(data[i][0]))
